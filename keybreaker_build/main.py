@@ -16,6 +16,21 @@ def draw_circle(surface, x, y, radius, color):
     gfxdraw.aacircle(surface, x, y, radius, color)
     gfxdraw.filled_circle(surface, x, y, radius, color)
 
+def colorize(image, newColor):
+    image = image.copy()
+    image.fill((0, 0, 0, 100), None, pygame.BLEND_RGBA_MULT)
+    image.fill(newColor[0:3] + (0,), None, pygame.BLEND_RGBA_ADD)
+    return image
+
+def draw_rgb_splitted_image(image, x, y):
+    image = image.convert_alpha()
+    
+    win.blit(colorize(image, (255,10,10)), (x+3,y-3))
+    win.blit(colorize(image,(10,255,10)), (x-3,y+3))
+    win.blit(colorize(image,(10,10,255)), (x-3,y))
+    win.blit(image, (x,y))
+
+
 class Particle:
     def __init__(self,seed_x,seed_y,color,offset,force,size,window):
         self.win = window
@@ -236,7 +251,7 @@ class Player(Cube):
         self.window_y = self.y + self.offset[1]
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         #pygame.draw.rect(win, [255,0,0], (self.window_x,self.window_y, self.width,self.height))
-        win.blit(pygame.transform.smoothscale(pygame.transform.flip(self.anim_frame, self.horizontal, False), (self.width,self.height)), (self.window_x, self.window_y))
+        draw_rgb_splitted_image(pygame.transform.smoothscale(pygame.transform.flip(self.anim_frame, self.horizontal, False), (self.width,self.height)), self.window_x, self.window_y)
         dif = self.x+self.offset[0]
         dif1 = self.y+self.offset[1]
         if(dif1<200):
