@@ -1,9 +1,5 @@
 # Imports
-import pygame,math,random,time
-
-import pygame
-import random
-import math
+import pygame, math, random, time
 from pygame import gfxdraw
 
 pygame.init()
@@ -30,55 +26,9 @@ def draw_rgb_splitted_image(image, x, y):
     win.blit(colorize(image,(10,10,255)), (x-3,y))
     win.blit(image, (x,y))
 
+def subtract(arr1,arr2):
+    return [e - arr2[c] for c, e in enumerate(arr1)]
 
-class Particle:
-    def __init__(self,seed_x,seed_y,color,offset,force,size,window):
-        self.win = window
-        self.x = seed_x
-        self.y = seed_y
-        self.offset = offset
-        self.seed_x = seed_x
-        self.seed_y = seed_y
-        self.dir = random.randint(-5,5)
-        if(self.dir==0): self.dir+=1
-        self.color = color
-        self.radius = abs(self.dir)+size
-        self.velocity = 10
-        self.height = -force+5
-    def show(self):
-        self.fly()
-        draw_circle(self.win, int(self.x + self.offset[0] + self.radius / 4), int(self.y + self.offset[1] + self.radius / 4),int(self.radius), subtract(self.color, [20,20,20]))
-        draw_circle(self.win, int(self.x + self.offset[0]), int(self.y + self.offset[1]), int(self.radius), self.color)
-    def fly(self):
-        if(self.velocity>0):
-            self.velocity -= 1
-        self.height += 0.25
-        self.y += self.height*0.1
-        self.x += (self.dir*self.velocity)*0.08
-        self.radius -= 0.3
-        if(self.radius<=0):
-            self.remove()
-    def remove(self):
-        particles.pop(particles.index(self))
-
-class CirculatingParticle(Particle):
-    def __init__(self,seed_x,seed_y,color,offset,radius,window):
-        self.seed_x = seed_x
-        self.seed_y = seed_y
-        self.offset = offset
-        self.color = color
-        self.radius = radius+random.randint(-30,30)
-        self.r = radius
-        self.pos = random.randint(1,360)
-        self.dir = random.choice([-0.05,0.05])
-        self.win = window
-    def show(self):
-        self.fly()
-        x = self.seed_x + self.offset[0] + math.cos(self.pos) * self.r
-        y = self.seed_y + self.offset[1] + math.sin(self.pos) * self.r
-        pygame.draw.rect(self.win, self.color, (x, y, 5, 5))
-    def fly(self):
-        self.pos += self.dir/(self.radius/50)
 
 fps = 60
 movement_speed = 1
@@ -108,9 +58,6 @@ class Dirs:
         self.left = "left"
         self.right = "right"
 Directions = Dirs()
-
-def subtract(arr1,arr2):
-    return [e - arr2[c] for c, e in enumerate(arr1)]
 
 pygame.init()
 win = pygame.display.set_mode((900, 600), pygame.DOUBLEBUF)
@@ -365,6 +312,56 @@ class Alert:
         else:
             del Timeouts[Timeouts.index(self)]
 
+class Particle:
+    def __init__(self,seed_x,seed_y,color,offset,force,size,window):
+        self.win = window
+        self.x = seed_x
+        self.y = seed_y
+        self.offset = offset
+        self.seed_x = seed_x
+        self.seed_y = seed_y
+        self.dir = random.randint(-5,5)
+        if(self.dir==0): self.dir+=1
+        self.color = color
+        self.radius = abs(self.dir)+size
+        self.velocity = 10
+        self.height = -force+5
+    def show(self):
+        self.fly()
+        draw_circle(self.win, int(self.x + self.offset[0] + self.radius / 4), int(self.y + self.offset[1] + self.radius / 4),int(self.radius), subtract(self.color, [20,20,20]))
+        draw_circle(self.win, int(self.x + self.offset[0]), int(self.y + self.offset[1]), int(self.radius), self.color)
+    def fly(self):
+        if(self.velocity>0):
+            self.velocity -= 1
+        self.height += 0.25
+        self.y += self.height*0.1
+        self.x += (self.dir*self.velocity)*0.08
+        self.radius -= 0.3
+        if(self.radius<=0):
+            self.remove()
+    def remove(self):
+        particles.pop(particles.index(self))
+
+class CirculatingParticle(Particle):
+    def __init__(self,seed_x,seed_y,color,offset,radius,window):
+        self.seed_x = seed_x
+        self.seed_y = seed_y
+        self.offset = offset
+        self.color = color
+        self.radius = radius+random.randint(-30,30)
+        self.r = radius
+        self.pos = random.randint(1,360)
+        self.dir = random.choice([-0.05,0.05])
+        self.win = window
+    def show(self):
+        self.fly()
+        x = self.seed_x + self.offset[0] + math.cos(self.pos) * self.r
+        y = self.seed_y + self.offset[1] + math.sin(self.pos) * self.r
+        pygame.draw.rect(self.win, self.color, (x, y, 5, 5))
+    def fly(self):
+        self.pos += self.dir/(self.radius/50)
+
+            
 def getDistance(x0, y0, x1, y1):
     return abs(math.sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2))
 
